@@ -1,4 +1,6 @@
 import { PubSub, withFilter } from 'graphql-subscriptions'
+// import reviewsCrawler from 'amazon-reviews-crawler'
+// import awsAPIClient from 'apac'
 import { Products } from './dbConnector'
 
 const pubsub = new PubSub()
@@ -29,12 +31,20 @@ export const resolvers = {
         console.error(`Error fetching products from db: ${e}`)
       }
     },
-    getProduct: async (root, { id }) => {
+    getProductById: async (root, { id }) => {
       try {
         const product = await Products.findById(id)
         return product
       } catch (e) {
         console.error(`Error fetching product with id: ${id}, Error:${e}`)
+      }
+    },
+    getProductByAsin: async (root, { asin }) => {
+      try {
+        const product = await Products.findOne({'ASIN':asin})
+        return product
+      } catch (e) {
+        console.error(`Error fetching product with asin: ${asin}, Error:${e}`)
       }
     },
     getProductReviews: async (root, { id }) => {
@@ -48,9 +58,13 @@ export const resolvers = {
   },
   Mutation: {
     addProduct: async (root, { input }) => {
-      console.log({ ...input })
-      const newProduct = await Products.create({ ...input })
-      return newProduct
+      try {
+        const newProduct = await Products.create({ ...input })
+        pubsub.publish('productAdded', {productAdded: newProduct})
+        return newProduct
+      } catch (e) {
+        console.error(`Error adding product: ${e}`)
+      }
     },
     addProductReview: async (root, { productId, review }) => {
       const newId = require('crypto').randomBytes(10).toString('hex')
@@ -72,6 +86,9 @@ export const resolvers = {
     }
   },
   Subscription: {
+    productAdded: {
+      subscribe: () => pubsub.asyncIterator('productAdded')
+    },
     productReviewAdded: {
       subscribe: withFilter(() => pubsub.asyncIterator('productReviewAdded'), (payload, variables) => payload.productId === variables.productId)
     }

@@ -2,14 +2,23 @@ import { makeExecutableSchema } from 'graphql-tools'
 import { resolvers } from './resolvers'
 
 const TYPE_DEFINITIONS = `
+  """
+  Product model that hold an Amazon Product by it's ASIN
+  """
   type Product {
     id: ID
     ASIN: String!
     title: String!
     rank: Int!
+    """
+    Reviews of this product
+    """
     reviews: [Review]
   }
   
+  """
+  Review model
+  """
   type Review {
     id: ID
     rating: Int
@@ -28,6 +37,7 @@ const TYPE_DEFINITIONS = `
   }
   
   input ReviewInput {
+    id: ID
     rating: Int
     title: String
     text: String
@@ -37,18 +47,54 @@ const TYPE_DEFINITIONS = `
   }
   
   type Query {
+    """
+    Query to call Amazon and request the product info. It will then store the
+    data in our database for future use
+    """
     fetchProductFromAWS(ASIN: String!): Product
+    
+    """
+    Get all products stored in our database
+    """
     getAllProducts: [Product]
-    getProduct(id: ID!): Product
+    
+    """
+    Get a specific product by it's database ID from our database
+    """
+    getProductById(id: ID!): Product
+    
+    """
+    Get a specific product by it's ASIN from our database
+    """
+    getProductByAsin(asin: String!): Product
+    
+    """
+    Get the reviews associated with a product stored in our database
+    """
     getProductReviews(id: ID!): [Review]
   }
   
   type Mutation {
+    """
+    Add a product to our database
+    """
     addProduct(input: ProductInput): Product
+    
+    """
+    Add a review of a specific product to our database
+    """
     addProductReview(productId: ID!, review: ReviewInput): Review
   }
   
   type Subscription {
+    """
+    Subscription of products. New data will be pushed to clients 
+    """
+    productAdded: Product
+  
+    """
+    Subscription of product reviews. New data will be pushed to clients 
+    """
     productReviewAdded(productId: ID!): Review
   }
 `
