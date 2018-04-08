@@ -2,61 +2,49 @@ import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 import ReviewList from './ReviewList'
-import ProductHeader from './ProductHeader'
 
 class ProductSingle extends Component {
-  componentWillMount () {
-    this.props.data.subscribeToMore({
-      document: reviewsSubscription,
-      variables: {
-        productId: this.props.match.params.productId
-      },
-      updateQuery: (prev, {subscriptionData}) => {
-        if (!subscriptionData.data) {
-          return prev
-        }
-
-        const newReview = subscriptionData.data.productReviewAdded
-
-        if (prev.product.reviews && !prev.product.reviews.find((item) => item.id === newReview.id)) {
-          return Object.assign({}, prev, {
-            product: Object.assign({}, prev.product, {
-              reviews: [...prev.product.reviews, newReview]
-            })
-          })
-        } else {
-          return prev
-        }
-      }
-    })
+  renderTitle (product) {
+    return (
+      <div className='row'>
+        <h4>{product.title}</h4>
+        <p>(ASIN: {product.ASIN})</p>
+      </div>
+    )
   }
 
   render () {
-    const { data: { loading, error, getProductById: product }, match } = this.props
-    const util = require('util')
-    console.log(`product => ${util.inspect(product, {showHidden: true, depth: null})}`)
+    const { data: { loading, error, getProductById: product } } = this.props
+
     if (loading) {
-      return <ProductHeader productId={match.params.productId} />
+      return (
+        <div className='preloader-wrapper big active'>
+          <div className='spinner-layer spinner-blue-only'>
+            <div className='circle-clipper left'>
+              <div className='circle' />
+            </div>
+            <div className='gap-patch'>
+              <div className='circle' />
+            </div>
+            <div className='circle-clipper right'>
+              <div className='circle' />
+            </div>
+          </div>
+        </div>
+
+      )
     }
 
     if (error) {
       return <p>{error.message}</p>
     }
 
-    if (product.reviews === null) {
-      return (
-        <div className='container'>
-          <h2>{product.ASIN} {product.title}</h2>
-        </div>
-      )
-    }
+    if (product.reviews === null) this.renderTitle(product)
 
     return (
       <div className='container'>
-        <div className='row'>
-          <h2>{product.ASIN} {product.title}</h2>
-        </div>
-        <ReviewList reviews={product.reviews} />
+        {this.renderTitle(product)}
+        <ReviewList productId={product.id} />
       </div>
     )
   }
@@ -77,19 +65,6 @@ export const productSingleQuery = gql`
         date
         rating
       }
-    }
-  }
-`
-
-const reviewsSubscription = gql`
-  subscription productReviewAdded($productId: ID!) {
-    productReviewAdded(productId: $productId) {
-      id
-      title
-      text
-      author
-      date
-      rating
     }
   }
 `

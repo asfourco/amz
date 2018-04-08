@@ -6,9 +6,8 @@ import { Link } from 'react-router-dom'
 class Products extends Component {
   componentWillMount () {
     this.props.data.subscribeToMore({
-      document: productsSubscription,
+      document: productSubscription,
       updateQuery: (prev, {subscriptionData}) => {
-        console.log(subscriptionData.data)
         if (!subscriptionData.data) {
           return prev
         }
@@ -16,9 +15,7 @@ class Products extends Component {
         const newProduct = subscriptionData.data.productAdded
 
         if (prev.products && !prev.products.find((item) => item.id === newProduct.id)) {
-          return Object.assign({}, prev, {
-            product: Object.assign({}, prev.products, newProduct)
-          })
+          return Object.assign({}, prev.products, newProduct)
         } else {
           return prev
         }
@@ -26,7 +23,7 @@ class Products extends Component {
     })
   }
   render () {
-    const { data: { loading, error, getAllProducts: products } } = this.props
+    const { data: { loading, error, products } } = this.props
 
     if (loading) {
       return <p>Loading ... </p>
@@ -38,13 +35,31 @@ class Products extends Component {
 
     return (
       <div className='row'>
-        <ul className='collection'>
+        <ul>
           {
             products.map((item) => (
-              <li className='collection-item' key={item.id}>
-                <Link to={item.id < 0 ? `/` : `product/${item.id}`}>
-                  {item.ASIN} {item.title} {item.rank}
-                </Link>
+              <li className='col l3 s12' key={item.id}>
+                <div className='card hoverable'>
+                  <span className='card-title'>
+                    {item.ASIN}
+                  </span>
+                  <div className='card-content'>
+                    <div className='row'>
+                      <div className='col l12 left'>
+                        <blockquote>
+                          <h5>Title</h5>{item.title}<br />
+                          <h5>RANK:</h5> {item.rank}
+                        </blockquote>
+                      </div>
+
+                    </div>
+                  </div>
+                  <div className='card-action'>
+                    <Link to={item.id < 0 ? `/` : `product/${item.id}`}>
+                      Read reviews
+                    </Link>
+                  </div>
+                </div>
               </li>
             ))
           }
@@ -56,7 +71,7 @@ class Products extends Component {
 
 export const productsListQuery = gql`
     query ProductsQuery {
-      getAllProducts {
+      products {
         id
         ASIN
         title
@@ -64,7 +79,7 @@ export const productsListQuery = gql`
       }
     }
   `
-const productsSubscription = gql`
+const productSubscription = gql`
   subscription productAdded {
     productAdded {
       id
