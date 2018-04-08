@@ -48,12 +48,6 @@ const TYPE_DEFINITIONS = `
   
   type Query {
     """
-    Query to call Amazon and request the product info. It will then store the
-    data in our database for future use
-    """
-    fetchProductFromAWS(ASIN: String!): Product
-    
-    """
     Get all products stored in our database
     """
     getAllProducts: [Product]
@@ -75,6 +69,12 @@ const TYPE_DEFINITIONS = `
   }
   
   type Mutation {
+    """
+    Call Amazon and request the product info. It will then store the
+    data in our database for future use
+    """
+    fetchProductFromAWS(ASIN: String!): Product
+
     """
     Add a product to our database
     """

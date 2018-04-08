@@ -1,28 +1,23 @@
 import { PubSub, withFilter } from 'graphql-subscriptions'
-// import reviewsCrawler from 'amazon-reviews-crawler'
-// import awsAPIClient from 'apac'
+import { awsClient, extractReviews } from './amzConnector'
 import { Products } from './dbConnector'
+import casual from 'casual' //fake data generator
 
 const pubsub = new PubSub()
 
+const insertProduct = async ({ ASIN, title, rank }) => {
+  try {
+    const newProduct = await Products.create({ ASIN, title, rank })
+    // newProduct.reviews = await extractReviews(ASIN)
+    // return await newProduct.save()
+    return newProduct
+  } catch (e) {
+    console.error(`Error processing fetched product ${ASIN}, ${e}`)
+  }
+}
+
 export const resolvers = {
   Query: {
-    fetchProductFromAWS: async (root, { ASIN }) => {
-      // call aws product api
-      // parse the returned xml to js
-      // create new record in Products
-      // parse reviews from iFrame and for each add to product reviews
-      console.log('fetching AWS product info for: ', ASIN)
-      const fakeProduct = {
-        id: require('crypto').randomBytes(10).toString('hex'),
-        ASIN: ASIN,
-        title: "Product title",
-        rank: 1000,
-        reviews: []
-      }
-
-      return fakeProduct
-    },
     getAllProducts: async () => {
       try {
         const products = await Products.find({})
@@ -41,7 +36,7 @@ export const resolvers = {
     },
     getProductByAsin: async (root, { asin }) => {
       try {
-        const product = await Products.findOne({'ASIN':asin})
+        const product = await Products.findOne({ 'ASIN': asin })
         return product
       } catch (e) {
         console.error(`Error fetching product with asin: ${asin}, Error:${e}`)
@@ -57,6 +52,30 @@ export const resolvers = {
     }
   },
   Mutation: {
+    fetchProductFromAWS: async (root, { ASIN }) => {
+      // call amz product api
+      // parse the returned xml to js
+      // create new record in Products
+      // parse reviews from iFrame and for each add to product reviews
+      try {
+      /*
+        const response = await awsClient.execute('ItemLookup', {
+          'ItemId': ASIN,
+          'ResponseGroup': 'ItemAttributes, Reviews, SalesRank'
+        })
+      */
+        const fetchedProduct = await Products.create({
+          ASIN: ASIN,
+          title: casual.title,
+          rank: casual.integer(0, 999999)
+        })
+
+        pubsub.publish('productAdded', {productAdded: fetchedProduct})
+        return fetchedProduct
+      } catch (e) {
+        console.error(`Error fetching product with ASIN: ${ASIN}, Error: ${e}`)
+      }
+    },
     addProduct: async (root, { input }) => {
       try {
         const newProduct = await Products.create({ ...input })
