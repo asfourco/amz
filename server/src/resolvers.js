@@ -1,24 +1,12 @@
 import { PubSub, withFilter } from 'graphql-subscriptions'
-import { awsClient, extractReviews } from './amzConnector'
+import { getProductInfo, extractReviews } from './amzConnector'
 import { Products } from './dbConnector'
-import casual from 'casual' //fake data generator
 
 const pubsub = new PubSub()
 
-const insertProduct = async ({ ASIN, title, rank }) => {
-  try {
-    const newProduct = await Products.create({ ASIN, title, rank })
-    // newProduct.reviews = await extractReviews(ASIN)
-    // return await newProduct.save()
-    return newProduct
-  } catch (e) {
-    console.error(`Error processing fetched product ${ASIN}, ${e}`)
-  }
-}
-
 export const resolvers = {
   Query: {
-    getAllProducts: async () => {
+    products: async () => {
       try {
         const products = await Products.find({})
         return products
@@ -42,32 +30,32 @@ export const resolvers = {
         console.error(`Error fetching product with asin: ${asin}, Error:${e}`)
       }
     },
-    getProductReviews: async (root, { id }) => {
+    reviews: async (root, { productId }) => {
       try {
-        const product = await Products.findById(id)
+        const product = await Products.findById(productId)
         return product.reviews
       } catch (e) {
-        console.error(`Error fetching reviews for product ${id}, Error: ${e}`)
+        console.error(`Error fetching reviews for product ${productId}, Error: ${e}`)
       }
     }
   },
   Mutation: {
     fetchProductFromAWS: async (root, { ASIN }) => {
+      console.log(`fetchProductFromAWS called for ASIN: ${ASIN}`)
       // call amz product api
       // parse the returned xml to js
       // create new record in Products
       // parse reviews from iFrame and for each add to product reviews
       try {
-      /*
-        const response = await awsClient.execute('ItemLookup', {
-          'ItemId': ASIN,
-          'ResponseGroup': 'ItemAttributes, Reviews, SalesRank'
-        })
-      */
+
+        const productInfo = await getProductInfo(ASIN)
+        const reviewsExtractionResults = await extractReviews(ASIN)
+
         const fetchedProduct = await Products.create({
           ASIN: ASIN,
-          title: casual.title,
-          rank: casual.integer(0, 999999)
+          title: productInfo.title,
+          rank: productInfo.rank,
+          reviews: reviewsExtractionResults.reviews
         })
 
         pubsub.publish('productAdded', {productAdded: fetchedProduct})

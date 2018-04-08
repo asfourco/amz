@@ -9,7 +9,7 @@ const TYPE_DEFINITIONS = `
     id: ID
     ASIN: String!
     title: String!
-    rank: Int!
+    rank: String!
     """
     Reviews of this product
     """
@@ -50,7 +50,7 @@ const TYPE_DEFINITIONS = `
     """
     Get all products stored in our database
     """
-    getAllProducts: [Product]
+    products: [Product]
     
     """
     Get a specific product by it's database ID from our database
@@ -65,7 +65,7 @@ const TYPE_DEFINITIONS = `
     """
     Get the reviews associated with a product stored in our database
     """
-    getProductReviews(id: ID!): [Review]
+    reviews(productId: ID!): [Review]
   }
   
   type Mutation {
