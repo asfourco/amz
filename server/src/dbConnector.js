@@ -6,7 +6,7 @@ mongoose.connect('mongodb://localhost/awsProducts')
 const productSchema = new mongoose.Schema({
   ASIN: { type: String, unique: true, required: true },
   title: { type: String, required: true },
-  rank: { type: String, required: true },
+  rank: { type: Array, required: true },
   reviews: { type: Array }
 })
 

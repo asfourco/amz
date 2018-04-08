@@ -9,11 +9,19 @@ const TYPE_DEFINITIONS = `
     id: ID
     ASIN: String!
     title: String!
-    rank: String!
+    rank: [Rank]!
     """
     Reviews of this product
     """
     reviews: [Review]
+  }
+  
+  """
+  Rank model
+  """
+  type Rank {
+    id: String
+    text: String
   }
   
   """
@@ -32,10 +40,15 @@ const TYPE_DEFINITIONS = `
   input ProductInput {
     ASIN: String!
     title: String!
-    rank: Int!
+    rank: [RankInput]
     reviews: [ReviewInput]
   }
   
+  input RankInput {
+    id: String
+    text: String
+  }
+ 
   input ReviewInput {
     id: ID
     rating: Int

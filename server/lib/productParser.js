@@ -1,11 +1,6 @@
-import cheerio from 'cheerio'
 import Nightmare from 'nightmare'
 import randomUA from 'random-ua'
-
-const util = require('util')
-// selectors
-const PRODUCT_TITLE = '#productTitle'
-const RANK = '#SalesRank'
+import { generateNewId } from './helpers'
 
 const scrape = async (ASIN) => {
   const nm = new Nightmare()
@@ -20,40 +15,22 @@ const scrape = async (ASIN) => {
         return {title, rank}
       })
       .end()
-    return result
+
+    const rankData = result.rank
+    let rankArray = rankData.split('#').slice(1) // remove 'Amazon Best Sellers Rank' text
+    // assemble into data set of rankings
+    const newRankData = Object.keys(rankArray).map(i =>
+      ({
+        id: generateNewId(4),
+        text:`#${rankArray[i]}`
+      })
+    )
+
+    return {title: result.title, rank: newRankData}
   } catch (e) {
-    console.error(`error fetching => ${e}`)
+    console.error(`Error scraping product info => ${e}`)
     return undefined
   }
-}
-
-const extractProductInfo = async (ASIN) => {
-
-  let data = {}
-
-  return nightmare
-    .useragent(randomUA.generate())
-    .goto(`https://www.amazon.com/dp/${ASIN}`)
-    .evaluate((PRODUCT_TITLE) => {
-      console.log('product title =>', document.querySelector(PRODUCT_TITLE).innerText)
-      document.querySelector(PRODUCT_TITLE).innerText
-    }, PRODUCT_TITLE)
-    .then((text) => data['productTitle'] = text )
-    // .evaluate((RANK) => {
-    //   console.log('rank =>', document.querySelector(RANK).innerText)
-    //   document.querySelector(RANK).innerText
-    // }, RANK)
-    // .then((text) => data['rank'] = text )
-    // .evaluate(() => {
-    //     const html = document.querySelector('body').innerHTML
-    //     const $ = cheerio.load(html)
-    //     data['productTitle'] = $(PRODUCT_TITLE).text()
-    //     data['rank'] = $(RANK).text()
-    // })
-    // .end()
-    .then((result) => console.log('nightmare result => ', result))
-    .then(() => { return data})
-  // return data
 }
 
 export default scrape

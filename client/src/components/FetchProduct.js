@@ -10,13 +10,12 @@ class FetchProduct extends Component {
   }
 
 
-  handleSave = ({ mutate }) => {
+  handleSave = () => {
   const { ASIN } = this.state
   this.props.mutate({
       variables: {ASIN},
       update: (store, { data: {fetchProductFromAWS: fetchedProduct}}) => {
         const data = store.readQuery({ query: productsListQuery })
-        console.log('/***** data:', util.inspect(data, {showHidden:true, depth:null}))
         data.products.push(fetchedProduct)
         store.writeQuery({query: productsListQuery, data})
       }
@@ -38,6 +37,7 @@ render () {
           value={this.state.ASIN}
           placeholder='Amazon Product ASIN'
           onChange={(e) => this.setState({ASIN: e.target.value})}
+          onKeyUp={(e) => (e.keyCode === 13) ? this.handleSave() : null}
         />
       </div>
       <div className="col s3">
@@ -63,7 +63,10 @@ const fetchProduct = gql`
             id
             ASIN
             title
-            rank
+            rank {
+                id
+                text
+            }
         }
     }
 `

@@ -1,5 +1,6 @@
 import { PubSub, withFilter } from 'graphql-subscriptions'
 import { getProductInfo, extractReviews } from './amzConnector'
+import { generateNewId } from '../lib/helpers'
 import { Products } from './dbConnector'
 
 const pubsub = new PubSub()
@@ -49,16 +50,16 @@ export const resolvers = {
       try {
 
         const productInfo = await getProductInfo(ASIN)
-        const reviewsExtractionResults = await extractReviews(ASIN)
-
         const fetchedProduct = await Products.create({
           ASIN: ASIN,
           title: productInfo.title,
-          rank: productInfo.rank,
-          reviews: reviewsExtractionResults.reviews
+          rank: productInfo.rank
         })
 
+        extractReviews(ASIN, fetchedProduct.id)
         pubsub.publish('productAdded', {productAdded: fetchedProduct})
+
+
         return fetchedProduct
       } catch (e) {
         console.error(`Error fetching product with ASIN: ${ASIN}, Error: ${e}`)
@@ -74,9 +75,8 @@ export const resolvers = {
       }
     },
     addProductReview: async (root, { productId, review }) => {
-      const newId = require('crypto').randomBytes(10).toString('hex')
       const newProductReview = {
-        id: String(newId),
+        id: String(generateNewId(10)),
         ...review
       }
       try {

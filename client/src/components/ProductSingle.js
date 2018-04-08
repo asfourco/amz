@@ -56,15 +56,6 @@ export const productSingleQuery = gql`
       id
       ASIN
       title
-      rank
-      reviews {
-        id
-        title
-        text
-        author
-        date
-        rating
-      }
     }
   }
 `

@@ -15,7 +15,9 @@ class Products extends Component {
         const newProduct = subscriptionData.data.productAdded
 
         if (prev.products && !prev.products.find((item) => item.id === newProduct.id)) {
-          return Object.assign({}, prev.products, newProduct)
+          return Object.assign({}, prev,{
+            products: [ newProduct, ...prev.products ]
+          })
         } else {
           return prev
         }
@@ -48,7 +50,16 @@ class Products extends Component {
                       <div className='col l12 left'>
                         <blockquote>
                           <h5>Title</h5>{item.title}<br />
-                          <h5>RANK:</h5> {item.rank}
+                          <h5>RANK:</h5>
+                          <ul>
+                            {
+                              item.rank.map((rankItem) => (
+                                <li key={rankItem.id}>
+                                  {rankItem.text}
+                                </li>
+                              ))
+                            }
+                          </ul>
                         </blockquote>
                       </div>
 
@@ -75,7 +86,10 @@ export const productsListQuery = gql`
         id
         ASIN
         title
-        rank
+        rank {
+            id
+            text
+        }
       }
     }
   `

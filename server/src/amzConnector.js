@@ -1,13 +1,33 @@
-import { getReviewsForProductId } from '../lib/reviewParser'
+import { Products } from './dbConnector'
 import amazonReviewCrawler from 'amazon-reviews-crawler'
 import extractProductInfo from '../lib/productParser'
-// import { OperationHelper } from 'apac'
 
-const extractReviews = async (ASIN) => {
-  console.log(`extractReviews called with ASIN:${ASIN}`)
+const addProductReview = async (productId, review) => {
+
+    const newId = require('crypto').randomBytes(10).toString('hex')
+    const newProductReview = {
+      id: String(newId),
+      ...review
+    }
+
+    try {
+      await Products.findOneAndUpdate(
+        { _id: productId },
+        { $push: { 'reviews': newProductReview } },
+        { new: true, upsert: true }
+      )
+    } catch (e) {
+      console.error(`Error saving product review: ${e}`)
+    }
+}
+
+const extractReviews = async (ASIN, productId) => {
+  console.log(`extractReviews called with ASIN:${ASIN} and db product ID: ${productId}`)
   try {
-    const reviews = await amazonReviewCrawler(ASIN)
-    return reviews
+    const result = await amazonReviewCrawler(ASIN)
+    await result.reviews.map(review => addProductReview(productId, review))
+    console.log(`reviews extracted ...`)
+    return
   } catch (e) {
     console.error(`Error fetching reviews for product ${ASIN}, ${e}`)
   }

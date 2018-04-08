@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
-const util = require('util')
 
 class ReviewsList extends Component {
   componentWillMount () {
@@ -11,8 +10,7 @@ class ReviewsList extends Component {
         productId: this.props.productId
       },
       updateQuery: (prev, {subscriptionData}) => {
-        console.log(`/***** ${util.inspect(prev, {showHidden: true, depth: null})}`)
-        console.log(`/***** ${util.inspect(subscriptionData, {showHidden: true, depth: null})}`)
+
         if (!subscriptionData.data) {
           return prev
         }
@@ -33,7 +31,6 @@ class ReviewsList extends Component {
 
   render () {
     const { data: { loading, error, reviews } } = this.props
-    console.log(`/**** reviews => ${util.inspect(reviews, {showHidden: true, depth: null})}`)
     if (loading) {
       return (
         <div className='preloader-wrapper big active'>
@@ -73,7 +70,7 @@ class ReviewsList extends Component {
                 <h5>{item.title}</h5>
                 <p>rating: {item.rating}</p>
                 <blockquote>{item.text}</blockquote>
-                <em>- {item.author} / {item.date}</em>
+                <em>- {item.author} / {formatDate(item.date)}</em>
               </div>
             </li>
           ))
@@ -108,6 +105,10 @@ const reviewsSubscription = gql`
         }
     }
 `
+
+const formatDate = (dateString) => {
+  return dateString.split('T')[0]
+}
 
 export default (graphql(productReviewQuery, {
   options: (props) => ({
