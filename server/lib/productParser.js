@@ -10,14 +10,21 @@ const scrape = async (ASIN) => {
       .goto(`https://www.amazon.com/dp/${ASIN}`)
       .wait('#a-page')
       .evaluate(() => {
-        const title = document.querySelector('#productTitle').innerText
-        const rank = document.querySelector('#SalesRank').innerText
+        const title = ( document.getElementsByTagName('title') ) ?
+           document.getElementsByTagName('title')[0].innerText : ''
+
+        // there are at least two selectors for where the sales rank can reside
+        const rank = (document.querySelector('#SalesRank') ) ?
+          document.querySelector('#SalesRank').innerText :
+          (document.querySelector('#prodDetails')) ?
+            document.querySelector('#prodDetails').innerText : ''
+
         return {title, rank}
       })
       .end()
 
-    const rankData = result.rank
-    let rankArray = rankData.split('#').slice(1) // remove 'Amazon Best Sellers Rank' text
+    // remove 'Amazon Best Sellers Rank' text
+    let rankArray = result.rank.split('#').slice(1)
     // assemble into data set of rankings
     const newRankData = Object.keys(rankArray).map(i =>
       ({

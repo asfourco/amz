@@ -23,12 +23,12 @@ export const resolvers = {
         console.error(`Error fetching product with id: ${id}, Error:${e}`)
       }
     },
-    getProductByAsin: async (root, { asin }) => {
+    getProductByAsin: async (root, { ASIN }) => {
       try {
-        const product = await Products.findOne({ 'ASIN': asin })
+        const product = await Products.findOne({ 'ASIN': ASIN })
         return product
       } catch (e) {
-        console.error(`Error fetching product with asin: ${asin}, Error:${e}`)
+        console.error(`Error fetching product with asin: ${ASIN}, Error:${e}`)
       }
     },
     reviews: async (root, { productId }) => {
@@ -48,15 +48,27 @@ export const resolvers = {
       // create new record in Products
       // parse reviews from iFrame and for each add to product reviews
       try {
+        const existingProduct = await Products.findOne({ 'ASIN': ASIN })
+        if (existingProduct) {
+          console.log(`${ASIN} is already in the database`)
+          // signal that we have a product but we should'nt return anything
+          return null
+        }
 
         const productInfo = await getProductInfo(ASIN)
+        if (productInfo === null) {
+          console.log(`${ASIN} could not be found at amazon.com`)
+          // signal that we don't have a product
+          return undefined
+        }
+
         const fetchedProduct = await Products.create({
           ASIN: ASIN,
           title: productInfo.title,
           rank: productInfo.rank
         })
 
-        extractReviews(ASIN, fetchedProduct.id)
+        extractReviews(ASIN, fetchedProduct.id, pubsub)
         pubsub.publish('productAdded', {productAdded: fetchedProduct})
 
 

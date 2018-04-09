@@ -15,7 +15,7 @@ class Products extends Component {
         const newProduct = subscriptionData.data.productAdded
 
         if (prev.products && !prev.products.find((item) => item.id === newProduct.id)) {
-          return Object.assign({}, prev,{
+          return Object.assign({}, prev, {
             products: [ newProduct, ...prev.products ]
           })
         } else {
@@ -24,17 +24,24 @@ class Products extends Component {
       }
     })
   }
+
   render () {
-    const { data: { loading, error, products } } = this.props
-
-    if (loading) {
-      return <p>Loading ... </p>
-    }
-
+    const { data: { error, products } } = this.props
+    const util = require('util')
+    console.log(`/***** products => ${util.inspect(products, {showHidden:true, depth:null})}`)
     if (error) {
       return <p>{error.message}</p>
     }
 
+    if (!products || products.length === 0) {
+      return (
+        <div className='row'>
+          <div className='col l4 offset-l4'>
+            <p>No products ... do you have one in mind?</p>
+          </div>
+        </div>
+      )
+    }
     return (
       <div className='row'>
         <ul>
@@ -49,17 +56,8 @@ class Products extends Component {
                     <div className='row'>
                       <div className='col l12 left'>
                         <blockquote>
-                          <h5>Title</h5>{item.title}<br />
-                          <h5>RANK:</h5>
-                          <ul>
-                            {
-                              item.rank.map((rankItem) => (
-                                <li key={rankItem.id}>
-                                  {rankItem.text}
-                                </li>
-                              ))
-                            }
-                          </ul>
+                          <h5>Title</h5>
+                          <p className='truncate'>{item.title}</p>
                         </blockquote>
                       </div>
 
@@ -86,14 +84,10 @@ export const productsListQuery = gql`
         id
         ASIN
         title
-        rank {
-            id
-            text
-        }
       }
     }
   `
-const productSubscription = gql`
+export const productSubscription = gql`
   subscription productAdded {
     productAdded {
       id

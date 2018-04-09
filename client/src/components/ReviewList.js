@@ -10,7 +10,6 @@ class ReviewsList extends Component {
         productId: this.props.productId
       },
       updateQuery: (prev, {subscriptionData}) => {
-
         if (!subscriptionData.data) {
           return prev
         }
@@ -30,33 +29,15 @@ class ReviewsList extends Component {
   }
 
   render () {
-    const { data: { loading, error, reviews } } = this.props
-    if (loading) {
-      return (
-        <div className='preloader-wrapper big active'>
-          <div className='spinner-layer spinner-blue-only'>
-            <div className='circle-clipper left'>
-              <div className='circle' />
-            </div>
-            <div className='gap-patch'>
-              <div className='circle' />
-            </div>
-            <div className='circle-clipper right'>
-              <div className='circle' />
-            </div>
-          </div>
-        </div>
-
-      )
-    }
+    const { data: { error, reviews } } = this.props
 
     if (error) {
       return <p>{error.message}</p>
     }
 
-    if (reviews === null || reviews.length === 0) {
+    if (!reviews || reviews.length === 0) {
       return (
-        <p>No reviews</p>
+        <p>No reviews ... perhaps I'm processing them?</p>
       )
     }
 

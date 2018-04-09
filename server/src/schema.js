@@ -7,9 +7,9 @@ const TYPE_DEFINITIONS = `
   """
   type Product {
     id: ID
-    ASIN: String!
-    title: String!
-    rank: [Rank]!
+    ASIN: String
+    title: String
+    rank: [Rank]
     """
     Reviews of this product
     """
@@ -73,7 +73,7 @@ const TYPE_DEFINITIONS = `
     """
     Get a specific product by it's ASIN from our database
     """
-    getProductByAsin(asin: String!): Product
+    getProductByAsin(ASIN: String!): Product
     
     """
     Get the reviews associated with a product stored in our database
