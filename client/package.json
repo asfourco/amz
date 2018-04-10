@@ -2,6 +2,15 @@
   "name": "awsclient",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "coverage": "react-scripts test --env=jsdom --coverage",
+    "eject": "react-scripts eject",
+    "lint": "standard",
+    "flow": "flow"
+  },
   "dependencies": {
     "apollo-boost": "^0.1.4",
     "apollo-link-ws": "^1.0.7",
@@ -15,14 +24,10 @@
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.1.1",
+    "react-test-renderer": "^16.3.1",
     "subscriptions-transport-ws": "^0.9.7"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "coverage": "react-scripts test --env=jsdom --coverage",
-    "eject": "react-scripts eject",
-    "lint": "standard"
+  "devDependencies": {
+    "flow-bin": "^0.69.0"
   }
 }

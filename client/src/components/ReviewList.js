@@ -1,8 +1,18 @@
+// @flow
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 
-class ReviewsList extends Component {
+type Props = {
+  productId: String,
+  data: {
+    subscribeToMore: Function,
+    error: Object,
+    reviews: Object
+  }
+}
+
+class ReviewsList extends Component<Props> {
   componentWillMount () {
     this.props.data.subscribeToMore({
       document: reviewsSubscription,

@@ -1,9 +1,23 @@
+// @flow
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 import { Link } from 'react-router-dom'
 
-class Products extends Component {
+type Props = {
+  data: {
+    subscribeToMore: Function,
+    error: Object,
+    products: [
+      {
+        id: string | number,
+        title: string,
+        ASIN: string
+      }
+    ]
+  }
+}
+class Products extends Component<Props> {
   componentWillMount () {
     this.props.data.subscribeToMore({
       document: productSubscription,
@@ -67,7 +81,7 @@ class Products extends Component {
                     </div>
                   </div>
                   <div className='card-action'>
-                    <Link to={item.id < 0 ? `/` : `product/${item.id}`}>
+                    <Link to={`product/${item.id}`}>
                       Read reviews
                     </Link>
                   </div>

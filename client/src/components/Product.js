@@ -1,10 +1,30 @@
+// @flow
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 import ReviewList from './ReviewList'
 import { productSubscription } from './Products'
 
-class Product extends Component {
+type Props = {
+  data: {
+    subscribeToMore: function,
+    error: Object,
+    loading: boolean,
+    getProductById: {
+      id: string,
+      ASIN: string,
+      title: string,
+      rank: [
+        {
+          id: string | number,
+          text: string
+        }
+      ]
+    }
+  }
+}
+
+class Product extends Component<Props> {
   componentWillMount () {
     this.props.data.subscribeToMore({
       document: productSubscription,
