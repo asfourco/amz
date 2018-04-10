@@ -19,7 +19,7 @@ class ReviewsList extends Component {
         if (prev.reviews && !prev.reviews.find((item) => item.id === newReview.id)) {
           console.log(`adding newReview`)
           return Object.assign({}, prev, {
-            reviews: [ newReview, ...prev.reviews ]
+            reviews: [ ...prev.reviews, newReview ]
           })
         } else {
           return prev
@@ -43,7 +43,7 @@ class ReviewsList extends Component {
 
     return (
 
-      <ul className='collection'>
+      <ul className='collection' id='Reviews'>
         {
           reviews.map(item => (
             <li key={item.id} className='collection-item'>

@@ -16,7 +16,7 @@ class App extends Component {
               <nav className='blue darken-2'>
                 <div className='nav-wrapper'>
                   <Link to='/' className='brand-logo center'>Amazon Demo</Link>
-                  <ul className='right hide-on-med-and-down'>
+                  <ul className='right'>
                     <li><Link to='/'><i className='material-icons'>home</i></Link></li>
                   </ul>
 

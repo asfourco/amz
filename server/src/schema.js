@@ -14,6 +14,7 @@ const TYPE_DEFINITIONS = `
     Reviews of this product
     """
     reviews: [Review]
+    
   }
   
   """

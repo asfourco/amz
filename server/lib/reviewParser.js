@@ -4,7 +4,6 @@ import { generateNewId } from './helpers'
 import { Products } from '../src/dbConnector'
 
 export const addProductReview = async (productId, review, pubsub) => {
-
   const newId = generateNewId(10)
   const newProductReview = {
     id: String(newId),
@@ -18,7 +17,6 @@ export const addProductReview = async (productId, review, pubsub) => {
       { new: true, upsert: true }
     )
     pubsub.publish('productReviewAdded', { productReviewAdded: newProductReview, productId: productId })
-
   } catch (e) {
     console.error(`Error saving product review: ${e}`)
   }
@@ -36,7 +34,7 @@ const scrape = async (ASIN) => {
       })
       .end()
 
-    console.log(`we have ${pages} to scrub`)
+    console.log(`we have ${pages} pages to scrape`)
 
     return pages
   } catch (e) {

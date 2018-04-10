@@ -1,10 +1,6 @@
 /* eslint-disable no-new */
 import express from 'express'
-import bodyParser from 'body-parser'
-import {
-  graphqlExpress,
-  graphiqlExpress
-} from 'apollo-server-express'
+import graphqlHTTP from 'express-graphql'
 import cors from 'cors'
 import { execute, subscribe } from 'graphql'
 import { createServer } from 'http'
@@ -18,10 +14,17 @@ const server = express()
 
 server.use('*', cors({ origin: `http://localhost:${CLIENT_PORT}` }))
 
-server.use('/graphql', bodyParser.json(), graphqlExpress({ schema }))
-server.use('/graphiql', bodyParser.json(), graphiqlExpress({
-  endpointURL: '/graphql',
-  subscriptionsEndpoint: `ws://localhost:${PORT}/subscriptions`
+server.use('/graphql', graphqlHTTP({
+  schema,
+  pretty: true,
+  graphiql: true,
+  formatError: (error) => {
+    return {
+      message: error.message,
+      code: error.originalError && error.originalError.code,
+      path: error.path
+    }
+  }
 }))
 
 const webSocket = createServer(server)

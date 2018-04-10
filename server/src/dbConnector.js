@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 mongoose.Promise = global.Promise
-mongoose.connect('mongodb://localhost/awsProducts')
+mongoose.connect('mongodb://localhost/amazonProducts')
 
 const productSchema = new mongoose.Schema({
   ASIN: { type: String, unique: true, required: true },

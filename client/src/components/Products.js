@@ -27,15 +27,18 @@ class Products extends Component {
 
   render () {
     const { data: { error, products } } = this.props
-    const util = require('util')
-    console.log(`/***** products => ${util.inspect(products, {showHidden:true, depth:null})}`)
+
     if (error) {
-      return <p>{error.message}</p>
+      return (
+        <div className='row' id='Products'>
+          <p>{error.message}</p>
+        </div>
+      )
     }
 
     if (!products || products.length === 0) {
       return (
-        <div className='row'>
+        <div className='row' id='Products'>
           <div className='col l4 offset-l4'>
             <p>No products ... do you have one in mind?</p>
           </div>
@@ -43,7 +46,7 @@ class Products extends Component {
       )
     }
     return (
-      <div className='row'>
+      <div className='row' id='Products'>
         <ul>
           {
             products.map((item) => (
@@ -54,7 +57,7 @@ class Products extends Component {
                   </span>
                   <div className='card-content'>
                     <div className='row'>
-                      <div className='col l12 left'>
+                      <div className='col l12 s12 left'>
                         <blockquote>
                           <h5>Title</h5>
                           <p className='truncate'>{item.title}</p>

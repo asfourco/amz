@@ -15,39 +15,32 @@ class FetchProduct extends Component {
     })
   }
 
-  handleSave = () => {
+  handleSave = ({errors}) => {
+    if (errors) { console.log(`Apollo Error => ${errors}`)}
     const { ASIN } = this.state
     this.setState({isFetching: true})
-
+    
     this.props.mutate({
         variables: {ASIN},
         update: (store, {
-          data: {
-            loading,
-            error,
-            fetchProductFromAWS: fetchedProduct
-        }}) => {
+          data: { fetchProductFromAWS: fetchedProduct }
+        }) => {
           this.setState({isFetching: false})
-
           if (fetchedProduct === null) {
-            this.setState({
-              error: true,
-              errorMsg: `Sorry, we already have that product saved.\nPlease try another ASIN`
-            })
-            return
-          }
-
-          if (fetchedProduct === undefined ) {
             this.setState({
               error: true,
               errorMsg: `Sorry, could not find the product.\nPlease try another ASIN`
             })
             return
           }
-
-          const data = store.readQuery({ query: productsListQuery })
-          data.products.push(fetchedProduct)
-          store.writeQuery({query: productsListQuery, data})
+          
+          // if we're on the products list page then add to the presentation layer
+          if (this.props.location.pathname === '/') {
+            const data = store.readQuery({ query: productsListQuery })
+            data.products.push(fetchedProduct)
+            store.writeQuery({query: productsListQuery, data})
+          }
+          
           this.props.history.push(`/product/${fetchedProduct.id}`)
         }
       })
@@ -56,28 +49,36 @@ class FetchProduct extends Component {
           ASIN: ''
         })
       })
+      .catch((res) => {
+        this.setState({isFetching: false, error: true})
+        res.graphQLErrors.map((error) => {
+          if (error.code === 420) {
+            this.setState({
+              errorMsg: `Sorry, we already have that product saved.\nPlease try another ASIN`
+            })
+          }
+          return null
+        })
+      })
   }
 
 
   render () {
-    const {
-      isFetching,
-      error,
-      errorMsg,
-      ASIN
-    } = this.state
-
     return (
-      <div>
+      <div id="FetchProduct">
         <ErrorModal
-          openModal={error}
-          message={errorMsg}
+          show={this.state.error}
+          message={this.state.errorMsg}
+          onClose={() => {
+            console.log('this onclick function was tiggered')
+            this.setState({error: !this.state.error, message: ''})
+          }}
         />
         <div className="row">
           <div className="col s12">
             <div className="col s5 offset-s3">
               <input
-                value={ASIN}
+                value={this.state.ASIN}
                 placeholder='Amazon Product ASIN'
                 onChange={(e) => this.setState({ASIN: e.target.value})}
                 onKeyUp={(e) => (e.keyCode === 13) ? this.handleSave() : null}
@@ -94,7 +95,7 @@ class FetchProduct extends Component {
             </div>
           </div>
         </div>
-          {isFetching &&
+          {this.state.isFetching &&
           <div className='row'>
             <div className='progress col s5 offset-s3'>
               <div className='indeterminate'></div>

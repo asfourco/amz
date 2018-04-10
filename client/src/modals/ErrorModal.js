@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import ReactModal from 'react-modal'
 
-ReactModal.setAppElement('#root')
-
 const modalStyles = {
   content: {
     top: '50%',
@@ -13,31 +11,35 @@ const modalStyles = {
     transform: 'translate(-50%, -50%)'
   }
 }
+
+ReactModal.setAppElement('#root')
+
 export default class ErrorModal extends Component {
-  componentWillMount() {
-    this.setState({dismiss:false})
-  }
   render () {
-    const {openModal, message} = this.props
-    const display = openModal && !this.state.dismiss
+    const { show, message, onClose } = this.props
+
     return (
       <ReactModal
-        isOpen={ display }
+        isOpen={show}
         style={modalStyles}
+        shouldCloseOnOverlayClick
+        shouldCloseOnEsc
+        onRequestClose={onClose}
+        shouldFocusAfterRender
+        shouldReturnFocusAfterClose
       >
-        <div className="row">
-          <div className="col l8 s8 offset-l2">
-            <h5>{message}</h5>
+        <div className='row'>
+          <div className='col l8 s8 offset-l2'>
+            <h4>Hmmm ...</h4>
+            <p>{ message }</p>
           </div>
         </div>
-          <div className='row'>
-            <button
-              className='btn-small waves-effect waves-light orange accent-2 right'
-              onClick={() => this.setState({dismiss: true})}
-            >close</button>
-
+        <div className='row' >
+          <button
+            className='btn-small waves-effect waves-light orange accent-2 right'
+            onClick={onClose}
+          >OK</button>
         </div>
-
       </ReactModal>
     )
   }
