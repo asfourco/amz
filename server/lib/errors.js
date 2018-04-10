@@ -5,5 +5,5 @@ export class ProductExistsError extends Error {
 
 export class ProductNotFound extends Error {
   code = 404
-  message = 'Product not found on amazon.com';
+  message = 'Error looking up product on amazon.com';
 }
