@@ -2,7 +2,6 @@
 import React, { Component } from 'react'
 import ReactModal from 'react-modal'
 
-
 // Type definitions
 type Props = {
   show: boolean,
@@ -22,7 +21,6 @@ const modalStyle = {
 }
 
 class ErrorModal extends Component<Props> {
-  
   render () {
     const { show, message, onClose } = this.props
 

@@ -82,6 +82,34 @@ npm run flow
 yarn flow
 ```
 
+## IDE specifics
+[Visual Studio Code](https://code.visualstudio.com/) was used to develop this app. Below are the workspace configurations that will help with automatic eslint'ing:
+
+```json
+// workspace settings:
+{
+  // lets vscode ignore type alias and arguments outside of .ts files
+  // e.g., without this setting one would get the following: 'type aliases' can only be used in a .ts file.
+  "javascript.validate.enable": false,
+  // omit the following setting if you want to use npm
+  "eslint.packageManager": "yarn", 
+  // lets eslint know it these directories have their own eslint configurations
+  "eslint.workingDirectories": ["./client", "./server"]
+}
+```
+
+## Acknowledgments
+The following resources helped in the development of this app:
+
+- [Apollo GraphQL Docs](https://www.apollographql.com/docs/react/)
+- [How to GraphQL](https://www.howtographql.com/)
+- Lynda.com courses:
+  * [GraphQL Essential Training](https://www.lynda.com/GraphQL-tutorials/GraphQL-Essential-Training/614315-2.html)
+  * [Learning Apollo](https://www.lynda.com/GraphQL-tutorials/Learning-Apollo/614313-2.html)
+  * [React Testing and Debugging](https://www.lynda.com/React-js-tutorials/React-Testing-Debugging/592511-2.html)
+- [amazon-reviews-crawler](https://github.com/escaladesports/amazon-reviews-crawler) an npm package by [Kennedy Rose](https://github.com/kennedyrose)
+
+
 ## License
 
 Copyright 2018 Fadi Asfour  

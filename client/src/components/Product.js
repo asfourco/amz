@@ -38,7 +38,7 @@ class Product extends Component<Props> {
 
         if (prev.products && !prev.products.find((item) => item.id === newProduct.id)) {
           return Object.assign({}, prev, {
-            products: [  ...prev.products, newProduct ]
+            products: [ ...prev.products, newProduct ]
           })
         } else {
           return prev

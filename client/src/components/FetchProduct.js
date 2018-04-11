@@ -23,7 +23,7 @@ type State = {
 }
 
 class FetchProduct extends Component<Props, State> {
-  componentWillMount(){
+  componentWillMount () {
     this.setState({
       ASIN: '',
       isFetching: false,
@@ -33,27 +33,24 @@ class FetchProduct extends Component<Props, State> {
   }
 
   handleSave = () => {
-
     const { ASIN } = this.state
     this.setState({isFetching: true})
-    
+
     this.props.mutate({
-        variables: {ASIN},
-        update: (store, {
-          data: { fetchProductFromAWS: fetchedProduct }
-        }) => {
-          this.setState({isFetching: false})
-        
-          // if we're on the products list page then add to the presentation layer
-          if (this.props.location.pathname === '/') {
-            const data = store.readQuery({ query: productsListQuery })
-            data.products.push(fetchedProduct)
-            store.writeQuery({query: productsListQuery, data})
-          }
-          
-          this.props.history.push(`/product/${fetchedProduct.id}`)
+      variables: {ASIN},
+      update: (store, { data: { fetchProductFromAWS: fetchedProduct } }) => {
+        this.setState({isFetching: false})
+
+        // if we're on the products list page then add to the presentation layer
+        if (this.props.location.pathname === '/') {
+          const data = store.readQuery({ query: productsListQuery })
+          data.products.push(fetchedProduct)
+          store.writeQuery({query: productsListQuery, data})
         }
-      })
+
+        this.props.history.push(`/product/${fetchedProduct.id}`)
+      }
+    })
       .then(() => {
         this.setState({
           ASIN: ''
@@ -64,21 +61,19 @@ class FetchProduct extends Component<Props, State> {
         res.graphQLErrors.map((error) => {
           let errorMsg = ''
           switch (error.code) {
-            case 404: 
+            case 404:
               errorMsg = `Sorry, could not find the product.\nPlease try another ASIN`
               break
-            case 420: 
+            case 420:
               errorMsg = `Sorry, we already have that product saved.\nPlease try another ASIN`
               break
             default: errorMsg = error.message
           }
 
           this.setState({ errorMsg })
-          
         })
       })
   }
-
 
   render () {
     return (
@@ -109,13 +104,13 @@ class FetchProduct extends Component<Props, State> {
             </div>
           </div>
         </div>
-          {this.state.isFetching &&
+        {this.state.isFetching &&
           <div className='row'>
             <div className='progress col s5 offset-s3'>
               <div className='indeterminate'></div>
             </div>
           </div>
-          }
+        }
       </div>
 
     )
