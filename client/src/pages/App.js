@@ -4,7 +4,7 @@ import { BrowserRouter, Link, Route, Switch } from 'react-router-dom'
 import Products from '../components/Products'
 import FetchProduct from '../components/FetchProduct'
 import ProductSingle from '../components/Product'
-import apolloClient from '../lib/apollo'
+import apolloClient from '../lib/apolloClient'
 
 class App extends Component {
   render () {

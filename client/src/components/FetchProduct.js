@@ -1,3 +1,4 @@
+// @flow
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
 import { graphql } from 'react-apollo'
@@ -5,7 +6,23 @@ import gql from 'graphql-tag'
 import { productsListQuery } from './Products'
 import ErrorModal from '../modals/ErrorModal'
 
-class FetchProduct extends Component {
+// Type definitions
+type Props = {
+  mutate: Function,
+  location: {
+    pathname: string
+  },
+  history: Object
+}
+
+type State = {
+  ASIN: string,
+  isFetching: boolean,
+  error: boolean,
+  errorMsg: string
+}
+
+class FetchProduct extends Component<Props, State> {
   componentWillMount(){
     this.setState({
       ASIN: '',
@@ -15,8 +32,8 @@ class FetchProduct extends Component {
     })
   }
 
-  handleSave = ({errors}) => {
-    if (errors) { console.log(`Apollo Error => ${errors}`)}
+  handleSave = () => {
+
     const { ASIN } = this.state
     this.setState({isFetching: true})
     
@@ -26,14 +43,7 @@ class FetchProduct extends Component {
           data: { fetchProductFromAWS: fetchedProduct }
         }) => {
           this.setState({isFetching: false})
-          if (fetchedProduct === null) {
-            this.setState({
-              error: true,
-              errorMsg: `Sorry, could not find the product.\nPlease try another ASIN`
-            })
-            return
-          }
-          
+        
           // if we're on the products list page then add to the presentation layer
           if (this.props.location.pathname === '/') {
             const data = store.readQuery({ query: productsListQuery })
@@ -52,12 +62,19 @@ class FetchProduct extends Component {
       .catch((res) => {
         this.setState({isFetching: false, error: true})
         res.graphQLErrors.map((error) => {
-          if (error.code === 420) {
-            this.setState({
-              errorMsg: `Sorry, we already have that product saved.\nPlease try another ASIN`
-            })
+          let errorMsg = ''
+          switch (error.code) {
+            case 404: 
+              errorMsg = `Sorry, could not find the product.\nPlease try another ASIN`
+              break
+            case 420: 
+              errorMsg = `Sorry, we already have that product saved.\nPlease try another ASIN`
+              break
+            default: errorMsg = error.message
           }
-          return null
+
+          this.setState({ errorMsg })
+          
         })
       })
   }
@@ -69,10 +86,7 @@ class FetchProduct extends Component {
         <ErrorModal
           show={this.state.error}
           message={this.state.errorMsg}
-          onClose={() => {
-            console.log('this onclick function was tiggered')
-            this.setState({error: !this.state.error, message: ''})
-          }}
+          onClose={() => this.setState({error: !this.state.error})}
         />
         <div className="row">
           <div className="col s12">
@@ -108,6 +122,7 @@ class FetchProduct extends Component {
   }
 }
 
+// graphql command
 const fetchProduct = gql`
     mutation FetchProduct($ASIN: String!) {
         fetchProductFromAWS(ASIN: $ASIN) {

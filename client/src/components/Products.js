@@ -4,6 +4,7 @@ import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 import { Link } from 'react-router-dom'
 
+// Type definitions
 type Props = {
   data: {
     subscribeToMore: Function,
@@ -17,6 +18,7 @@ type Props = {
     ]
   }
 }
+
 class Products extends Component<Props> {
   componentWillMount () {
     this.props.data.subscribeToMore({
@@ -95,6 +97,7 @@ class Products extends Component<Props> {
   }
 }
 
+// graphql commands
 export const productsListQuery = gql`
     query ProductsQuery {
       products {

@@ -5,9 +5,10 @@ import gql from 'graphql-tag'
 import ReviewList from './ReviewList'
 import { productSubscription } from './Products'
 
+// Type definitions
 type Props = {
   data: {
-    subscribeToMore: function,
+    subscribeToMore: Function,
     error: Object,
     loading: boolean,
     getProductById: {
@@ -86,6 +87,7 @@ class Product extends Component<Props> {
   }
 }
 
+// graphql command
 export const productQuery = gql`
   query ProductSingleQuery($productId: ID!) {
     getProductById(id: $productId) {

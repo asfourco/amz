@@ -13,21 +13,24 @@ const httpLink = new HttpLink({
 })
 
 // Create a WebSocket link:
-const wsLink = new WebSocketLink({
-  uri: `ws://localhost:${API_SERVER_PORT}/subscriptions`,
-  options: {
-    reconnect: true
-  }
-})
+const wsLink = process.browser ? 
+  new WebSocketLink({
+    uri: `ws://localhost:${API_SERVER_PORT}/subscriptions`,
+    options: {
+      reconnect: true
+    }
+  }) : null
 
-const link = split(
-  ({ query }) => {
-    const { kind, operation } = getMainDefinition(query)
-    return kind === 'OperationDefinition' && operation === 'subscription'
-  },
-  wsLink,
-  httpLink
-)
+const link = process.browser ? 
+  split(
+    ({ query }) => {
+      const { kind, operation } = getMainDefinition(query)
+      return kind === 'OperationDefinition' && operation === 'subscription'
+    },
+    wsLink,
+    httpLink
+  ) : httpLink
+
 
 const dataIdFromObject = (result) => {
   if (result.__typename) {
@@ -56,6 +59,7 @@ const cache = new InMemoryCache({
 })
 
 const client = new ApolloClient({
+  ssrMode: !process.browser,
   link,
   cache
 })

@@ -10,15 +10,17 @@ const scrape = async (ASIN) => {
     .goto(`https://www.amazon.com/dp/${ASIN}`)
     .wait('#a-page')
     .evaluate(() => {
-      const title = (document.getElementsByTagName('title'))
-        ? document.getElementsByTagName('title')[0].innerText : ''
+      const title = (document.getElementsByTagName('title')) ? 
+        document.getElementsByTagName('title')[0].innerText : ''
 
       // there are at least two selectors for where the sales rank can reside
-      const rank = (document.querySelector('#SalesRank'))
-        ? document.querySelector('#SalesRank').innerText
-        : (document.querySelector('#prodDetails'))
-          ? document.querySelector('#prodDetails').innerText : ''
-
+      let rank = ''
+      if (document.querySelector('#SalesRank')) {
+        rank = document.querySelector('#SalesRank').innerText
+      } else if (document.querySelector('#prodDetails')) {
+        rank = document.querySelector('#prodDetails').innerText
+      } 
+      
       return {title, rank}
     })
     .end()

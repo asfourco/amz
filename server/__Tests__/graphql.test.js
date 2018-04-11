@@ -2,7 +2,6 @@ import { schema } from '../src/schema'
 import {graphql} from 'graphql'
 import { setupTest } from './testing_helper'
 
-// beforeEach(() => setupTest())
 
 describe('GraphQL services', () => {
   beforeEach(() => setupTest())
@@ -131,7 +130,7 @@ describe('Fetch and store', () => {
   const ASIN = "B01787OLQG"
 
   it ('can fetch data from amazon', async () => {
-    // FIXME: seems we can't scrape the info ... need to investigate
+
     const mutation = `
       mutation {
         fetchProductFromAWS(
@@ -140,7 +139,7 @@ describe('Fetch and store', () => {
       }
     `
     const mutationResult = await graphql(schema, mutation)
-    console.log(mutationResult)
+    
     const { data: { fetchProductFromAWS: product }} = mutationResult
     expect(product).not.toBe(null)
     expect(product.title).toContain('Cashmere')

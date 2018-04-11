@@ -1,12 +1,12 @@
 {
-  "name": "aws",
+  "name": "amzserver",
   "version": "1.0.0",
   "description": "AWS Product API demo",
   "main": "index.js",
   "scripts": {
     "lint": "standard",
     "dev": "nodemon ./server.js --exec babel-node -e js",
-    "start": "node ./server.js",
+    "start": "babel-node ./server.js",
     "test": "jest --env=node --watch",
     "coverage": "jest --env=node --coverage"
   },

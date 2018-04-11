@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 
+// Type definitions
 type Props = {
   productId: String,
   data: {
@@ -71,6 +72,7 @@ class ReviewsList extends Component<Props> {
   }
 }
 
+// graphql commands
 const productReviewQuery = gql`
     query ProductReviewQuery($productId: ID!) {
         reviews(productId: $productId) {

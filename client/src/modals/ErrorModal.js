@@ -1,7 +1,16 @@
+// @flow
 import React, { Component } from 'react'
 import ReactModal from 'react-modal'
 
-const modalStyles = {
+
+// Type definitions
+type Props = {
+  show: boolean,
+  message: string,
+  onClose: Function
+}
+
+const modalStyle = {
   content: {
     top: '50%',
     left: '50%',
@@ -12,21 +21,21 @@ const modalStyles = {
   }
 }
 
-ReactModal.setAppElement('#root')
-
-export default class ErrorModal extends Component {
+class ErrorModal extends Component<Props> {
+  
   render () {
     const { show, message, onClose } = this.props
 
     return (
       <ReactModal
         isOpen={show}
-        style={modalStyles}
+        style={modalStyle}
+        onRequestClose={onClose}
         shouldCloseOnOverlayClick
         shouldCloseOnEsc
-        onRequestClose={onClose}
         shouldFocusAfterRender
         shouldReturnFocusAfterClose
+        ariaHideApp={false}
       >
         <div className='row'>
           <div className='col l8 s8 offset-l2'>
@@ -44,3 +53,5 @@ export default class ErrorModal extends Component {
     )
   }
 }
+
+export default ErrorModal
