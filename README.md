@@ -85,7 +85,7 @@ yarn flow
 ## IDE specifics
 [Visual Studio Code](https://code.visualstudio.com/) was used to develop this app. Below are the workspace configurations that will help with automatic eslint'ing:
 
-```json
+```javascript
 // workspace settings:
 {
   // lets vscode ignore type alias and arguments outside of .ts files
