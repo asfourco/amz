@@ -1,4 +1,4 @@
-# Apollo client/server demo
+# Apollo GraphQL client/server demo
 ## Description
 The ReactJS app is a demo that allows a user to search for a specific product on amazon.com using the product's ASIN (Amazon Standard Identification Number).
 
