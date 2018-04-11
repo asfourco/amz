@@ -63,6 +63,25 @@ yarn start
 
 Now the user can navigate to `http://localhost:3000` to interact with the app
 
+## Testing
+Unit testing is handled by [Jest](https://facebook.github.io/jest). One can find the unit tests in the `src/__tests__` folder within either the client or server directories. 
+
+To run these tests:   
+```bash
+# server or client side:
+npm run test
+# or
+yarn test
+```
+
+In addition we use [Flow](https://flow.org) to type check our components:
+```bash
+# on the client side only:
+npm run flow 
+# or 
+yarn flow
+```
+
 ## License
 
 Copyright 2018 Fadi Asfour  
