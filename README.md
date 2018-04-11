@@ -63,7 +63,7 @@ yarn start
 
 Now the user can navigate to `http://localhost:3000` to interact with the app
 
-##License
+## License
 
 Copyright 2018 Fadi Asfour  
 Licensed under the [MIT License](LICENSE)
